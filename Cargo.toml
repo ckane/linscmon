@@ -1,0 +1,19 @@
+[package]
+name = "linscmon"
+version = "0.2.0"
+authors = ["Coleman Kane <ckane@colemankane.org>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.release]
+opt-level = 3
+lto = true
+
+[dependencies]
+nix = ">=0.20.0"
+fork = ">=0.1.18"
+exec = ">=0.3.0"
+chrono = ">=0.4.19"
+libc = ">=0.2.95"
+syscalls = ">=0.3.3"
