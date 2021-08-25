@@ -1,5 +1,5 @@
 use std::env;
-use ptrace_watch::trace_event::wrap_cmd::WrapCmd;
+use linscmon::WrapCmd;
 
 fn main() {
     let arglist: Vec<String> = env::args().collect();
