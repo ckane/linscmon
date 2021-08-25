@@ -66,14 +66,12 @@ impl WrapCmd {
         let ws = match waitpid(Pid::from_raw(-1), None) {
             Err(e) => {
                 match e {
-                    nix::Error::Sys(errno) => {
-                        if errno != nix::errno::Errno::ECHILD {
-                            panic!("Wait faild")
-                        } else {
-                            Ok(WaitStatus::Exited(self.pid, 0))
-                        }
+                    nix::errno::Errno::ECHILD => {
+                        panic!("Wait faild")
                     },
-                    _ => { Err(e) },
+                    _ => {
+                        Ok(WaitStatus::Exited(self.pid, 0))
+                    },
                 }
             },
             Ok(w) => {
