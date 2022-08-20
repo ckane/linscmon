@@ -2,7 +2,7 @@ use chrono::prelude::{DateTime,Utc};
 use nix::unistd::{Pid};
 use std::fmt;
 use libc::user_regs_struct;
-use syscalls::SyscallNo;
+use syscalls::Sysno;
 
 pub mod wrap_cmd;
 
@@ -14,7 +14,7 @@ pub use wrap_cmd::WrapCmd;
  * string values.
  */
 pub struct TraceEvent {
-    syscall: SyscallNo,
+    syscall: Sysno,
     pid: Pid,
     args: Option<Vec<String>>,
     ts: DateTime<Utc>,
@@ -31,9 +31,9 @@ impl TraceEvent {
      *
      */
     fn from_regs(regs: user_regs_struct, pid: Pid) -> Option<TraceEvent> {
-        if let Some(syscall) = SyscallNo::new(regs.orig_rax as usize) {
+        if let Some(syscall) = Sysno::new(regs.orig_rax as usize) {
             match syscall {
-                SyscallNo::SYS_open|SyscallNo::SYS_creat|SyscallNo::SYS_unlink => {
+                Sysno::open|Sysno::creat|Sysno::unlink => {
                     let ev = TraceEvent {
                         syscall,
                         args: Some(vec![WrapCmd::read_string_arg(pid, regs.rdi)]),
@@ -42,7 +42,7 @@ impl TraceEvent {
                     };
                     Some(ev)
                 },
-                SyscallNo::SYS_openat|SyscallNo::SYS_unlinkat => {
+                Sysno::openat|Sysno::unlinkat => {
                     let ev = TraceEvent {
                         syscall,
                         args: Some(vec![WrapCmd::read_string_arg(pid, regs.rsi)]),
@@ -51,7 +51,7 @@ impl TraceEvent {
                     };
                     Some(ev)
                 },
-                SyscallNo::SYS_link|SyscallNo::SYS_symlink => {
+                Sysno::link|Sysno::symlink => {
                     let ev = TraceEvent {
                         syscall,
                         args: Some(vec![WrapCmd::read_string_arg(pid, regs.rdi),
@@ -61,7 +61,7 @@ impl TraceEvent {
                     };
                     Some(ev)
                 },
-                SyscallNo::SYS_linkat => {
+                Sysno::linkat => {
                     let ev = TraceEvent {
                         syscall,
                         args: Some(vec![WrapCmd::read_string_arg(pid, regs.rsi),
@@ -71,7 +71,7 @@ impl TraceEvent {
                     };
                     Some(ev)
                 },
-                SyscallNo::SYS_symlinkat => {
+                Sysno::symlinkat => {
                     let ev = TraceEvent {
                         syscall,
                         args: Some(vec![WrapCmd::read_string_arg(pid, regs.rdi),
@@ -81,7 +81,7 @@ impl TraceEvent {
                     };
                     Some(ev)
                 },
-                SyscallNo::SYS_execve => {
+                Sysno::execve => {
                     let mut argstr: Vec<String> = vec![];
                     let mut argarrptr = regs.rsi;
                     while let Ok(argptr) = WrapCmd::read_long_arg(pid, argarrptr) {

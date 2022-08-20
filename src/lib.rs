@@ -12,7 +12,7 @@ use std::sync::{Arc,Mutex};
 use std::fmt;
 use libc::user_regs_struct;
 use std::collections::HashSet;
-use syscalls::SyscallNo;
+use syscalls::Sysno;
 
 pub mod trace_event;
 
